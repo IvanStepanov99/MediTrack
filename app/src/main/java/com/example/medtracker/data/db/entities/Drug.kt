@@ -1,12 +1,11 @@
-package com.example.medtracker.data.entities
+package com.example.medtracker.data.db.entities
 
 import androidx.room.*
 
 @Entity(
     tableName = "drug",
     indices = [
-        Index(value = ["uid"]),
-        Index(value = ["name"]),
+        Index(value = ["uid", "name"]),
         Index(value = ["uid", "drugbank_id"], unique = true)
     ],
     foreignKeys = [
@@ -27,8 +26,6 @@ data class Drug(
     @ColumnInfo(name = "drugbank_id") //store normalized uppercase
     val drugbankId: String,
     val notes: String? = null, //(optional) notes about meds
-    @ColumnInfo(name = "client_uuid")
-    val clientUuid: String,
     //TimeStamps
     val createdAt: Long,
     val updatedAt: Long

@@ -1,14 +1,10 @@
-package com.example.medtracker.data.entities
+package com.example.medtracker.data.db.entities
 
 import androidx.room.*
-import java.util.TimeZone
 
 @Entity(
     tableName = "dose_schedule",
-    indices = [
-        Index(value = ["drugId"]),
-        Index(value = ["client_uuid"], unique = true)
-    ],
+    indices = [Index(value = ["drugId"]),],
     foreignKeys = [
         ForeignKey(
             entity = Drug::class,
@@ -37,8 +33,6 @@ data class DoseSchedule(
     @ColumnInfo(name = "end_date")
     val endDate: Long? = null,
     val timeZone: String,
-    @ColumnInfo(name = "client_uuid")
-    val clientUuid: String,
     //TimeStamps
     val createdAt: Long,
     val updatedAt: Long

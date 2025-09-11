@@ -1,4 +1,4 @@
-package com.example.medtracker.data.entities
+package com.example.medtracker.data.db.entities
 
 import androidx.room.*
 

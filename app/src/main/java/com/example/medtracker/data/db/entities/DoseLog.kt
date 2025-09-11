@@ -1,4 +1,4 @@
-package com.example.medtracker.data.entities
+package com.example.medtracker.data.db.entities
 
 import androidx.room.*
 
@@ -8,7 +8,6 @@ import androidx.room.*
         Index(value = ["drugId", "plannedTime"]),
         Index(value = ["drugId", "takenTime"]),
         Index(value = ["doseScheduleId"]),
-        Index(value = ["client_uuid"], unique = true)
     ],
     foreignKeys = [
         ForeignKey(
@@ -36,8 +35,6 @@ data class DoseLog(
     val quantity: Double? = null,
     val unit: String? = null,
     val note: String? = null, // optional note written by user
-    @ColumnInfo(name = "client_uuid")
-    val clientUuid: String,
     //TimeStamps
     val createdAt: Long,
     val updatedAt: Long

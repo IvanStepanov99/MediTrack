@@ -22,6 +22,7 @@ data class DoseTime(
     val doseTimeId: Long = 0L,
     val doseScheduleId: Long,
     val minutesLocal: Int,
+    val doseCount: Double,
     //TimeStamps
     val createdAt: Long,
     val updatedAt: Long

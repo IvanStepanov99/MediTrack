@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Entity(
     tableName = "dose_schedule",
-    indices = [Index(value = ["drugId"]),],
+    indices = [Index(value = ["drugId"], unique = true)],
     foreignKeys = [
         ForeignKey(
             entity = Drug::class,

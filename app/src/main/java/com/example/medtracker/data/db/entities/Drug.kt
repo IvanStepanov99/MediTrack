@@ -6,7 +6,7 @@ import androidx.room.*
     tableName = "drug",
     indices = [
         Index(value = ["uid", "name"]),
-        Index(value = ["uid", "drugbank_id"], unique = true)
+        Index(value = ["uid", "drugbank_id", "strengthAmount"], unique = true)
     ],
     foreignKeys = [
         ForeignKey(

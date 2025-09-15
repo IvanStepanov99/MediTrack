@@ -1,12 +1,13 @@
 package com.example.medtracker.data.db.entities
 
+import android.telephony.SignalStrength
 import androidx.room.*
 
 @Entity(
     tableName = "drug",
     indices = [
         Index(value = ["uid", "name"]),
-        Index(value = ["uid", "drugbank_id", "strengthAmount"], unique = true)
+        Index(value = ["uid", "drugbank_id"], unique = true)
     ],
     foreignKeys = [
         ForeignKey(
@@ -25,6 +26,9 @@ data class Drug(
     val brandName: String? = null, //Not for all meds (null)
     @ColumnInfo(name = "drugbank_id") //store normalized uppercase
     val drugbankId: String,
+    val strength: Double? = null,
+    val unit: String? = null,
+    val form: String? = null,
     val notes: String? = null, //(optional) notes about meds
     //TimeStamps
     val createdAt: Long,

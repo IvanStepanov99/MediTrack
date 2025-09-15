@@ -34,6 +34,6 @@ data class DoseSchedule(
     val endDate: Long? = null,
     val timeZone: String,
     //TimeStamps
-    val createdAt: Long,
-    val updatedAt: Long
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )

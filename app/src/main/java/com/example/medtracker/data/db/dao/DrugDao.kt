@@ -27,7 +27,7 @@ interface DrugDao {
         WHERE uid = :uid AND name LIKE :prefix || '%'
         ORDER BY name
     """)
-    suspend fun findByNamePrefix(uid: String, prefix: String): Flow<List<Drug>>
+    fun findByNamePrefix(uid: String, prefix: String): Flow<List<Drug>>
 
     @Query("UPDATE drug SET updatedAt = :now WHERE drugId = :id")
     suspend fun touchUpdated(id: Long, now: Long)

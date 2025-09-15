@@ -24,6 +24,6 @@ data class DoseTime(
     val minutesLocal: Int,
     val doseCount: Double,
     //TimeStamps
-    val createdAt: Long,
-    val updatedAt: Long
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )

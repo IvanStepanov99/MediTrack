@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.junit.junit)
+    implementation(libs.androidx.junit.ktx)
     val room_version = "2.7.2"
 
     implementation ("com.google.code.gson:gson:2.9.1")
@@ -51,6 +53,10 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
+
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

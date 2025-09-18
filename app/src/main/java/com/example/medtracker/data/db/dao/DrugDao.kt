@@ -31,4 +31,7 @@ interface DrugDao {
 
     @Query("UPDATE drug SET updatedAt = :now WHERE drugId = :id")
     suspend fun touchUpdated(id: Long, now: Long)
+
+    @Query("SELECT * FROM drug WHERE uid = :uid ORDER BY name COLLATE NOCASE")
+    fun observeByUser(uid: String): Flow<List<Drug>>
 }

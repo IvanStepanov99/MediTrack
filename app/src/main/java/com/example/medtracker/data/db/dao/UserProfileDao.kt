@@ -16,6 +16,4 @@ interface UserProfileDao {
 
     @Query("UPDATE user_profile SET lastSignAt = :now WHERE uid = :uid")
     suspend fun touchSignAt(uid: String, now: Long)
-
-
 }

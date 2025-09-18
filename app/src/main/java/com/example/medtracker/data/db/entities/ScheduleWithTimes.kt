@@ -10,5 +10,5 @@ data class ScheduleWithTimes(
         entityColumn = "doseScheduleId",
         entity = DoseTime::class
     )
-    val time: List<DoseTime>
+    val times: List<DoseTime>
 )

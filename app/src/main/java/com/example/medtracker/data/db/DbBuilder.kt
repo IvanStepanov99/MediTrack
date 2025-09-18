@@ -17,5 +17,4 @@ object DbBuilder {
                 .build()
                 .also { INSTANCE = it}
         }
-
 }

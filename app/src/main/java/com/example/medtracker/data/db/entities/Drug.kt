@@ -31,6 +31,6 @@ data class Drug(
     val form: String? = null,
     val notes: String? = null, //(optional) notes about meds
     //TimeStamps
-    val createdAt: Long,
-    val updatedAt: Long
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )

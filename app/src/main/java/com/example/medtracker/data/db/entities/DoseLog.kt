@@ -36,6 +36,6 @@ data class DoseLog(
     val unit: String? = null,
     val note: String? = null, // optional note written by user
     //TimeStamps
-    val createdAt: Long,
-    val updatedAt: Long
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
     )

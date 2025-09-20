@@ -34,4 +34,15 @@ interface DrugDao {
 
     @Query("SELECT * FROM drug WHERE uid = :uid ORDER BY name COLLATE NOCASE")
     fun observeByUser(uid: String): Flow<List<Drug>>
+
+    @Query("""
+  SELECT * FROM drug
+  WHERE uid = :uid
+    AND (
+      LOWER(name) = LOWER(:q)
+      OR LOWER(brandName) = LOWER(:q)
+    )
+  LIMIT 1
+""")
+    suspend fun findExactByNameOrBrand(uid: String, q: String): Drug?
 }

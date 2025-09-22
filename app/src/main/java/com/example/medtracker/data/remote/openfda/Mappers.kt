@@ -7,11 +7,12 @@ internal fun NdcItem.toSuggestion(): DrugSuggestion {
     val formNorm = dosageForm?.lowercase()?.replace('_',' ')
     val generic = genericName ?: activeIngredients?.firstOrNull()?.name
     return DrugSuggestion(
-        genericName = genericName,
+        genericName = generic,
         brandName = brandName,
         strengthAmount = amt,
         strengthUnit = unit,
-        form = formNorm
+        form = formNorm,
+        productNdc = productNdc
     )
 }
 
@@ -27,7 +28,7 @@ fun DrugSuggestion.toDrug(uid: String) = Drug(
     uid = uid,
     name = (genericName ?: brandName ?: "").trim(),
     brandName = brandName,
-    drugbankId = "",
+    drugbankId = productNdc ?: "",
     strength = strengthAmount,
     unit = strengthUnit,
     form = form,

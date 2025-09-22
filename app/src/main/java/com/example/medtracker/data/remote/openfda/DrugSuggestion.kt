@@ -5,6 +5,6 @@ data class DrugSuggestion(
     val brandName: String?,
     val strengthAmount: Double?,
     val strengthUnit: String?,
-    val form: String?
+    val form: String?,
+    val productNdc: String?
 )
-

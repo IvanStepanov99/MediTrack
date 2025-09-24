@@ -11,8 +11,7 @@ internal fun NdcItem.toSuggestion(): DrugSuggestion {
         brandName = brandName,
         strengthAmount = amt,
         strengthUnit = unit,
-        form = formNorm,
-        productNdc = productNdc
+        form = formNorm
     )
 }
 
@@ -28,7 +27,7 @@ fun DrugSuggestion.toDrug(uid: String) = Drug(
     uid = uid,
     name = (genericName ?: brandName ?: "").trim(),
     brandName = brandName,
-    drugbankId = productNdc ?: "",
+    drugbankId = "",
     strength = strengthAmount,
     unit = strengthUnit,
     form = form,

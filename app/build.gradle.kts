@@ -51,6 +51,7 @@ android {
 dependencies {
     implementation(libs.junit.junit)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.appcompat)
     val room_version = "2.7.2"
 
     debugImplementation("androidx.compose.ui:ui-tooling")

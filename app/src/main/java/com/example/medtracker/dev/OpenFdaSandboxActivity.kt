@@ -44,7 +44,7 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
             loading = true
             error = null
             try {
-                // space-OR is robust; Retrofit encodes spaces automatically
+
                 results = repo.suggestByName(query, limit = 10)
                 Toast.makeText(ctx, "Results: ${results.size}", Toast.LENGTH_SHORT).show()
             } catch (t: Throwable) {

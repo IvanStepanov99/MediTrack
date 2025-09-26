@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="First Name"
-        android:inputType="textEmailAddress"/>
+        android:inputType="text"/>
 
     <EditText
         android:id="@+id/etLastName"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="Last Name"
-        android:inputType="textPassword" />
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/etDob"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="Date of Birth (DD/MM/YYYY)"
-        android:inputType="textPassword" />
+        android:inputType="date" />
 
     <Button
         android:id="@+id/btnLogin"

@@ -33,7 +33,7 @@ class OpenFdaSandboxActivity : ComponentActivity() {
 @Composable
 private fun SandboxScreen(repo: OpenFdaRepository) {
     val ctx = LocalContext.current
-    var query by remember { mutableStateOf("apix") }
+    var query by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var results by remember { mutableStateOf<List<DrugSuggestion>>(emptyList()) }
@@ -56,7 +56,7 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
         }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("OpenFDA Sandbox (debug)") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text("OpenFDA Sandbox") }) }) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -94,7 +94,7 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
             when {
                 error != null -> Text("Error: $error", color = MaterialTheme.colorScheme.error)
                 !loading && results.isEmpty() && query.isNotBlank() ->
-                    Text("No results. Try: apix, ibup, metfo")
+                    Text("No results")
             }
 
             LazyColumn(
@@ -109,7 +109,7 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
                             scope.launch {
                                 try {
                                     val userDao = db.userProfileDao()
-                                    val testUid = "local"
+                                    val testUid = userDao.get("3fb46d48-efe8-4da5-8597-f7cbe7db43ba")?.uid ?: "local"
                                     val user = userDao.get(testUid)
                                     if (user == null) {
                                         userDao.upsert(com.example.medtracker.data.db.entities.UserProfile(uid = testUid, firstName = "Test", lastName = "User"))

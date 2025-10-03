@@ -6,8 +6,7 @@ import androidx.room.*
 @Entity(
     tableName = "drug",
     indices = [
-        Index(value = ["uid", "name"]),
-        Index(value = ["uid", "drugbank_id"], unique = true)
+        Index(value = ["uid", "name"])
     ],
     foreignKeys = [
         ForeignKey(

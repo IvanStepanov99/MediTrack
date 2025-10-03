@@ -16,4 +16,25 @@ interface UserProfileDao {
 
     @Query("UPDATE user_profile SET lastSignAt = :now WHERE uid = :uid")
     suspend fun touchSignAt(uid: String, now: Long)
+
+    @Query("""
+        SELECT * FROM user_profile
+        WHERE LOWER(firstName) = LOWER(:first)
+          AND LOWER(lastName)  = LOWER(:last)
+        LIMIT 1
+    """)
+    suspend fun findByName(first: String, last: String): UserProfile?
+
+    @Query("""
+        SELECT * FROM user_profile
+        WHERE LOWER(firstName) = LOWER(:first)
+          AND LOWER(lastName)  = LOWER(:last)
+          AND dob = :dob
+        LIMIT 1
+    """)
+    suspend fun findByNameAndDob(first: String, last: String, dob: String): UserProfile?
+
+    // check if any profile exists
+    @Query("SELECT * FROM user_profile LIMIT 1")
+    suspend fun getAny(): UserProfile?
 }

@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:padding="24dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#EFEFFF">
 
     <Space
         android:layout_width="match_parent"
@@ -40,6 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Login"
+        android:textColor="#EFEFFF"
+        android:background="#5959DF"
         />
 
     <Space

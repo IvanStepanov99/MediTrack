@@ -1,5 +1,7 @@
 package com.example.medtracker.dev
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -18,7 +20,9 @@ import com.example.medtracker.data.remote.openfda.DrugSuggestion
 import com.example.medtracker.data.remote.openfda.OpenFdaClient
 import com.example.medtracker.data.remote.openfda.OpenFdaRepository
 import com.example.medtracker.data.remote.openfda.toDrug
+import com.example.medtracker.data.session.SessionManager
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class OpenFdaSandboxActivity : ComponentActivity() {
     private val repo = OpenFdaRepository() // Retrofit wrapper
@@ -29,10 +33,22 @@ class OpenFdaSandboxActivity : ComponentActivity() {
     }
 }
 
+private fun hasInternet(cm: ConnectivityManager?): Boolean {
+    return try {
+        cm ?: return false
+        val net = cm.activeNetwork ?: return false
+        val caps = cm.getNetworkCapabilities(net) ?: return false
+        caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    } catch (se: SecurityException) {
+        true
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SandboxScreen(repo: OpenFdaRepository) {
     val ctx = LocalContext.current
+    val cm = ctx.getSystemService(ConnectivityManager::class.java)
     var query by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -41,15 +57,18 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
 
     fun runSearch() {
         scope.launch {
+            if (!hasInternet(cm)) {
+                Toast.makeText(ctx, "No internet connection", Toast.LENGTH_LONG).show()
+                return@launch
+            }
             loading = true
             error = null
             try {
-
                 results = repo.suggestByName(query, limit = 10)
-                Toast.makeText(ctx, "Results: ${results.size}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, "Results: ${'$'}{results.size}", Toast.LENGTH_SHORT).show()
             } catch (t: Throwable) {
                 error = t.message ?: "Unknown error"
-                Toast.makeText(ctx, "Error: $error", Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, "Error: ${'$'}error", Toast.LENGTH_LONG).show()
             } finally {
                 loading = false
             }
@@ -79,20 +98,38 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
 
                 Button(onClick = {
                     scope.launch {
+                        if (!hasInternet(cm)) {
+                            Toast.makeText(ctx, "No internet connection", Toast.LENGTH_LONG).show()
+                            return@launch
+                        }
                         try {
                             val svc = OpenFdaClient.service
-                            val res = svc.searchNdc("generic_name:ibuprofen", 2)
-                            val n = res.results?.size ?: 0
-                            Toast.makeText(ctx, "Ping NDC OK: $n rows", Toast.LENGTH_SHORT).show()
+                            // Use a known-good wildcard query with quotes and OR between fields
+                            val q1 = "generic_name:\"ibup*\" OR brand_name:\"ibup*\""
+                            val res1 = svc.searchNdc(q1, 2)
+                            val n1 = res1.results?.size ?: 0
+                            if (n1 > 0) {
+                                Toast.makeText(ctx, "Ping NDC #1 OK: ${'$'}n1 rows", Toast.LENGTH_SHORT).show()
+                            } else {
+
+                                val q2 = "active_ingredients.name:\"IBUPROFEN\""
+                                val res2 = svc.searchNdc(q2, 2)
+                                val n2 = res2.results?.size ?: 0
+                                Toast.makeText(ctx, "Ping NDC #2 (${ '$' }q2): ${'$'}n2 rows", Toast.LENGTH_SHORT).show()
+                            }
                         } catch (t: Throwable) {
-                            Toast.makeText(ctx, "Ping NDC FAIL: ${t.message}", Toast.LENGTH_LONG).show()
+                            val msg = if (t is HttpException) {
+                                val body = try { t.response()?.errorBody()?.string() } catch (e: Exception) { null }
+                                "HTTP ${'$'}{t.code()} ${'$'}{t.message()} ${'$'}body"
+                            } else t.message ?: t.toString()
+                            Toast.makeText(ctx, "Ping NDC FAIL: ${'$'}msg", Toast.LENGTH_LONG).show()
                         }
                     }
                 }) { Text("Ping NDC") }
             }
 
             when {
-                error != null -> Text("Error: $error", color = MaterialTheme.colorScheme.error)
+                error != null -> Text("Error: ${'$'}error", color = MaterialTheme.colorScheme.error)
                 !loading && results.isEmpty() && query.isNotBlank() ->
                     Text("No results")
             }
@@ -109,15 +146,16 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
                             scope.launch {
                                 try {
                                     val userDao = db.userProfileDao()
-                                    val testUid = userDao.get("3fb46d48-efe8-4da5-8597-f7cbe7db43ba")?.uid ?: "local"
-                                    val user = userDao.get(testUid)
-                                    if (user == null) {
-                                        userDao.upsert(com.example.medtracker.data.db.entities.UserProfile(uid = testUid, firstName = "Test", lastName = "User"))
+                                    val uidPref = SessionManager.getCurrentUid(ctx)
+                                    val current = if (uidPref != null) userDao.get(uidPref) else userDao.getAny()
+                                    if (current == null) {
+                                        Toast.makeText(ctx, "No local user. Please log in first.", Toast.LENGTH_LONG).show()
+                                        return@launch
                                     }
-                                    val id = db.drugDao().insert(s.toDrug(uid = testUid))
-                                    Toast.makeText(ctx, "Inserted drugId=$id", Toast.LENGTH_SHORT).show()
+                                    val id = db.drugDao().insert(s.toDrug(uid = current.uid))
+                                    Toast.makeText(ctx, "Inserted for uid=${'$'}{current.uid} (drugId=${'$'}id)", Toast.LENGTH_SHORT).show()
                                 } catch (e: Exception) {
-                                    Toast.makeText(ctx, "Insert failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(ctx, "Insert failed: ${'$'}{e.message}", Toast.LENGTH_LONG).show()
                                 }
                             }
                         }

@@ -13,6 +13,7 @@ import android.widget.Toast
 import java.util.UUID
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import com.example.medtracker.data.session.SessionManager
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,8 @@ class LoginActivity : AppCompatActivity() {
                     val exact = userProfileDao.findByNameAndDob(firstName, lastName, dob)
                     if (exact != null) {
                         userProfileDao.touchSignAt(exact.uid, System.currentTimeMillis())
+                        // Persist current uid
+                        SessionManager.setCurrentUid(applicationContext, exact.uid)
                         runOnUiThread {
                             navigateToMain(uid = exact.uid, firstName = exact.firstName ?: firstName)
                         }
@@ -65,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
                         runOnUiThread {
                             Toast.makeText(
                                 this@LoginActivity,
-                                "The user for this app is already created OR check the given info.",
+                                "The user for this app is already created OR check given info.",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -84,6 +87,8 @@ class LoginActivity : AppCompatActivity() {
                         lastSignAt = now
                     )
                     userProfileDao.upsert(newProfile)
+                    // Persist current uid
+                    SessionManager.setCurrentUid(applicationContext, uid)
                     runOnUiThread {
                         Toast.makeText(this@LoginActivity, "User created", Toast.LENGTH_SHORT).show()
                         navigateToMain(uid = uid, firstName = firstName)

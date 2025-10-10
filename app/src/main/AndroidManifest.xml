@@ -37,6 +37,14 @@
             android:name=".ui.LogsActivity"
             android:exported="false"
             android:label="Logs" />
+        <activity
+            android:name=".ui.StatsActivity"
+            android:exported="false"
+            android:label="Stats" />
+        <activity
+            android:name=".ui.SearchActivity"
+            android:exported="false"
+            android:label="Search" />
     </application>
 
 </manifest>

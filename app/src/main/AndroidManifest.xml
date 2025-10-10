@@ -33,6 +33,10 @@
             android:name=".dev.OpenFdaSandboxActivity"
             android:exported="true"
             android:label="OpenFDA Sandbox (debug)" />
+        <activity
+            android:name=".ui.LogsActivity"
+            android:exported="false"
+            android:label="Logs" />
     </application>
 
 </manifest>

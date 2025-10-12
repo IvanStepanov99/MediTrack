@@ -17,6 +17,7 @@ import android.widget.Toast
 import android.util.Log
 import com.example.medtracker.data.session.SessionManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,13 +25,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val firstName = intent.getStringExtra("firstName")
-        val namePart = if (!firstName.isNullOrBlank()) firstName else "User"
+        val userId = intent.getStringExtra("uid")
+        val namePart = if (!firstName.isNullOrBlank()) firstName else userId ?: "User"
         findViewById<TextView>(R.id.tvWelcome).text = "Welcome, $namePart!"
 
         val rv = findViewById<RecyclerView>(R.id.rvMeds)
         val adapter = MedAdapter()
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+        val rootView = findViewById<android.view.View>(android.R.id.content)
 
         val db = DbBuilder.getDatabase(applicationContext)
         val drugDao = db.drugDao()
@@ -51,7 +54,12 @@ class MainActivity : AppCompatActivity() {
                     lifecycleScope.launch {
                         drugDao.delete(removedDrug)
                     }
-                    Toast.makeText(this@MainActivity, "Medication deleted", Toast.LENGTH_SHORT)
+                    Snackbar.make(rootView, "Deleted ${removedDrug.name}", Snackbar.LENGTH_LONG)
+                        .setAction("Undo") {
+                            lifecycleScope.launch {
+                                drugDao.insert(removedDrug)
+                            }
+                        }
                         .show()
                 }
             }
@@ -76,8 +84,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        setContentView(R.layout.activity_main)
+        fun refreshWelcomeMessage() {
+            val firstName = intent.getStringExtra("firstName")
+            val namePart = if (!firstName.isNullOrBlank()) firstName else userId ?: "User"
+            findViewById<TextView>(R.id.tvWelcome).text = "Welcome, $namePart!"
+        }
         BottomBarHelper.setup(this, R.id.btnMeds)
-
+        refreshWelcomeMessage()
     }
 }

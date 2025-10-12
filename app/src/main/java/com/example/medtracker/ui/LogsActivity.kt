@@ -13,5 +13,5 @@ class LogsActivity : AppCompatActivity(){
 
         setContentView(R.layout.activity_logs)
         BottomBarHelper.setup(this, R.id.btnLogs)
-        }
+    }
 }

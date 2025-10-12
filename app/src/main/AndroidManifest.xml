@@ -43,7 +43,7 @@
             android:label="Stats" />
         <activity
             android:name=".ui.SearchActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="Search" />
     </application>
 

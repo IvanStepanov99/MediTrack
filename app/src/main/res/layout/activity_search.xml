@@ -26,6 +26,34 @@
             android:layout_marginTop="12dp"/>
     </LinearLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="#3D3D99"
+        app:boxBackgroundColor="#EFEFFF"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search for a drug"
+            android:textColorHint="#3D3D99"
+            android:textColor="#3D3D99"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:completionThreshold="1"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
     <!-- Divider above bottom bar -->
     <View
         android:layout_width="match_parent"

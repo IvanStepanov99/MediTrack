@@ -11,6 +11,8 @@ import com.example.medtracker.data.db.entities.Drug
 class MedAdapter : RecyclerView.Adapter<MedAdapter.VH>() {
     private var items: MutableList<Drug> = mutableListOf()
 
+    var onItemClick: ((Drug) -> Unit)? = null
+
     fun submit(list: List<Drug>) {
         items = list.toMutableList()
         notifyDataSetChanged()
@@ -21,9 +23,8 @@ class MedAdapter : RecyclerView.Adapter<MedAdapter.VH>() {
             val removed = items.removeAt(position)
             notifyItemRemoved(position)
             return removed
-        } else {
-            return null
         }
+        return null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -34,6 +35,12 @@ class MedAdapter : RecyclerView.Adapter<MedAdapter.VH>() {
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.bind(items[position])
+        holder.itemView.setOnClickListener {
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onItemClick?.invoke(items[pos])
+            }
+        }
     }
 
     override fun getItemCount(): Int = items.size

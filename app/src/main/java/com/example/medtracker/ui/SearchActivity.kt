@@ -2,18 +2,23 @@ package com.example.medtracker.ui
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.medtracker.R
-import com.example.medtracker.data.remote.openfda.OpenFdaRepository
+import com.example.medtracker.data.db.DbBuilder
+import com.example.medtracker.data.db.entities.Drug
+import com.example.medtracker.data.session.SessionManager
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.core.widget.addTextChangedListener
+import android.widget.Toast
 
-class SearchActivity : AppCompatActivity(){
-    private val repo = OpenFdaRepository()
+class SearchActivity : AppCompatActivity() {
+    private var allMeds: List<Drug> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,54 +34,95 @@ class SearchActivity : AppCompatActivity(){
         )
         etSearch.setAdapter(suggestionAdapter)
 
+        val db = DbBuilder.getDatabase(applicationContext)
+        val drugDao = db.drugDao()
+
+        val uidFromIntent = intent.getStringExtra("uid")
+        val uid = uidFromIntent ?: SessionManager.getCurrentUid(applicationContext)
+        if (uid == null) {
+            Toast.makeText(this, "No user id. Please log in.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                drugDao.observeByUser(uid).collect { list ->
+                    allMeds = list
+                    val q = etSearch.text?.toString().orEmpty()
+                    updateSuggestions(q, allMeds, suggestionAdapter, etSearch)
+                }
+            }
+        }
+
         var suggestJob: Job? = null
         etSearch.addTextChangedListener { text ->
             val q = text?.toString().orEmpty()
             suggestJob?.cancel()
-            if (q.length < 2) {
-                suggestionAdapter.clear()
-                return@addTextChangedListener
-            }
             suggestJob = lifecycleScope.launch {
-                // debounce
-                delay(300)
-                val results = repo.suggestByName(q, limit = 10)
-                val labels = results.map { s ->
-                    val brand = s.brandName?.takeIf { it.isNotBlank() }
-                    val generic = s.genericName?.takeIf { it.isNotBlank() }
-                    val name = when {
-                        !brand.isNullOrBlank() && !generic.isNullOrBlank() -> "$brand — $generic"
-                        !brand.isNullOrBlank() -> brand
-                        !generic.isNullOrBlank() -> generic
-                        else -> "(Unnamed)"
-                    }
-                    val form = s.form?.takeIf { it.isNotBlank() }
-                    val strength = listOfNotNull(
-                        s.strengthAmount?.let { amt -> if (amt % 1.0 == 0.0) amt.toInt().toString() else amt.toString() },
-                        s.strengthUnit?.takeIf { it.isNotBlank() }
-                    ).joinToString("")
-                    buildString {
-                        append(name)
-                        if (!form.isNullOrBlank() || strength.isNotBlank()) {
-                            append("  ·  ")
-                            append(listOfNotNull(form, strength.ifBlank { null }).joinToString(" "))
-                        }
-                    }
-                }
-                suggestionAdapter.clear()
-                suggestionAdapter.addAll(labels)
-                if (labels.isNotEmpty()) etSearch.showDropDown()
+                delay(120) // debounce time
+                updateSuggestions(q, allMeds, suggestionAdapter, etSearch)
             }
         }
 
-        etSearch.setOnItemClickListener { parent, view, position, id ->
+        etSearch.setOnItemClickListener { _, _, position, _ ->
             val chosen = suggestionAdapter.getItem(position)
             if (chosen != null) {
                 etSearch.setText(chosen, false)
                 etSearch.setSelection(chosen.length)
-                // Optionally: kick off a full search or navigate
-                // e.g., startActivity(Intent(this, DrugDetailActivity::class.java).putExtra("label", chosen))
             }
         }
+    }
+
+    private fun updateSuggestions(
+        query: String,
+        meds: List<Drug>,
+        adapter: ArrayAdapter<String>,
+        input: MaterialAutoCompleteTextView
+    ) {
+        val q = query.trim()
+        if (q.length < 1) {
+            adapter.clear()
+            input.dismissDropDown()
+            return
+        }
+        val lower = q.lowercase()
+        val filtered = meds.asSequence()
+            .filter { d ->
+                d.name.contains(lower, ignoreCase = true) ||
+                (d.brandName?.contains(lower, ignoreCase = true) == true)
+            }
+            .take(12)
+            .toList()
+
+        val labels = filtered.map { d ->
+            val brand = d.brandName?.takeIf { it.isNotBlank() }
+            val generic = d.name.takeIf { it.isNotBlank() }
+            val name = when {
+                brand != null && generic != null -> "$brand — $generic"
+                brand != null -> brand
+                generic != null -> generic
+                else -> "(Unnamed)"
+            }
+            val form = d.form?.takeIf { it.isNotBlank() }
+            val strength = buildString {
+                d.strength?.let { amt ->
+                    append(if (amt % 1.0 == 0.0) amt.toInt().toString() else amt.toString())
+                }
+                d.unit?.takeIf { it.isNotBlank() }?.let { u ->
+                    if (isNotEmpty()) append("")
+                    append(u)
+                }
+            }
+            buildString {
+                append(name)
+                if (!form.isNullOrBlank() || strength.isNotBlank()) {
+                    append("  ·  ")
+                    append(listOfNotNull(form, strength.ifBlank { null }).joinToString(" "))
+                }
+            }
+        }
+        adapter.clear()
+        adapter.addAll(labels)
+        if (labels.isNotEmpty()) input.showDropDown() else input.dismissDropDown()
     }
 }

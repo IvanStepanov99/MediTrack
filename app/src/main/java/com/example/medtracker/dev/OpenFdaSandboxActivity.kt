@@ -21,6 +21,8 @@ import com.example.medtracker.data.remote.openfda.OpenFdaClient
 import com.example.medtracker.data.remote.openfda.OpenFdaRepository
 import com.example.medtracker.data.remote.openfda.toDrug
 import com.example.medtracker.data.session.SessionManager
+import com.example.medtracker.data.db.entities.DoseSchedule
+import java.util.TimeZone
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -54,6 +56,12 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
     var error by remember { mutableStateOf<String?>(null) }
     var results by remember { mutableStateOf<List<DrugSuggestion>>(emptyList()) }
     val scope = rememberCoroutineScope()
+
+    // State for scheduling dialog after insert
+    var pendingDrugId by remember { mutableStateOf<Long?>(null) }
+    var doseAmountText by remember { mutableStateOf("") }
+    var doseUnitText by remember { mutableStateOf("mg") }
+    var showScheduleDialog by remember { mutableStateOf(false) }
 
     fun runSearch() {
         scope.launch {
@@ -152,8 +160,13 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
                                         Toast.makeText(ctx, "No local user. Please log in first.", Toast.LENGTH_LONG).show()
                                         return@launch
                                     }
-                                    val id = db.drugDao().insert(s.toDrug(uid = current.uid))
-                                    Toast.makeText(ctx, "Inserted for uid=${'$'}{current.uid} (drugId=${'$'}id)", Toast.LENGTH_SHORT).show()
+                                    val drugId = db.drugDao().insert(s.toDrug(uid = current.uid))
+                                    // Prepare schedule dialog defaults
+                                    pendingDrugId = drugId
+                                    doseAmountText = s.strengthAmount?.toString() ?: ""
+                                    doseUnitText = s.strengthUnit ?: "mg"
+                                    showScheduleDialog = true
+                                    Toast.makeText(ctx, "Inserted drugId=${'$'}drugId for uid=${'$'}{current.uid}", Toast.LENGTH_SHORT).show()
                                 } catch (e: Exception) {
                                     Toast.makeText(ctx, "Insert failed: ${'$'}{e.message}", Toast.LENGTH_LONG).show()
                                 }
@@ -163,6 +176,77 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
                 }
             }
         }
+    }
+
+    if (showScheduleDialog && pendingDrugId != null) {
+        AlertDialog(
+            onDismissRequest = { showScheduleDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val amt = doseAmountText.trim().toDoubleOrNull()
+                    val unit = doseUnitText.trim().ifBlank { "mg" }
+                    if (amt == null || amt <= 0) {
+                        Toast.makeText(ctx, "Enter valid dose amount", Toast.LENGTH_LONG).show()
+                        return@TextButton
+                    }
+                    val drugId = pendingDrugId!!
+                    val db = DbBuilder.getDatabase(ctx)
+                    scope.launch {
+                        try {
+                            val schedDao = db.doseScheduleDao()
+                            val schedule = DoseSchedule(
+                                doseScheduleId = 0L,
+                                drugId = drugId,
+                                prn = true,
+                                doseAmount = amt,
+                                doseUnit = unit,
+                                freqType = "PRN",
+                                timeZone = TimeZone.getDefault().id
+                            )
+                            schedDao.saveOrReplaceForDrug(schedule, emptyList())
+
+                            // Also update the Drug row so strength/unit match the schedule
+                            val drugDao = db.drugDao()
+                            val d = drugDao.getById(drugId)
+                            if (d != null) {
+                                drugDao.update(d.copy(strength = amt, unit = unit))
+                            }
+
+                            Toast.makeText(ctx, "Schedule saved", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(ctx, "Schedule failed: ${'$'}{e.message}", Toast.LENGTH_LONG).show()
+                        } finally {
+                            showScheduleDialog = false
+                            pendingDrugId = null
+                        }
+                    }
+                }) { Text("Save") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showScheduleDialog = false
+                    pendingDrugId = null
+                }) { Text("Cancel") }
+            },
+            title = { Text("Set dose for this med") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = doseAmountText,
+                        onValueChange = { doseAmountText = it },
+                        label = { Text("Dose amount") },
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = doseUnitText,
+                        onValueChange = { doseUnitText = it },
+                        label = { Text("Dose unit (e.g., mg, ml)") },
+                        singleLine = true
+                    )
+                    Text("Note: This saves a PRN schedule (no times)." , style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        )
     }
 }
 

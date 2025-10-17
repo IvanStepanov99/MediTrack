@@ -1,9 +1,9 @@
 package com.example.medtracker.data.db.dao
 
-import android.adservices.adid.AdId
 import androidx.room.*
 import com.example.medtracker.data.db.entities.DoseSchedule
 import com.example.medtracker.data.db.entities.DoseTime
+import com.example.medtracker.data.db.entities.sanitizedForSave
 
 @Dao
 interface DoseScheduleDao {
@@ -48,19 +48,23 @@ interface DoseScheduleDao {
         schedule: DoseSchedule,
         times: List<Pair<Int, Double>>
     ): Long {
+        // sanitize schedule first: if prn==true this will clear time-related fields
+        val scheduleToSave = schedule.sanitizedForSave()
+        val timesToUse = if (scheduleToSave.prn) emptyList<Pair<Int, Double>>() else times
+
         val existing = getByDrugId(schedule.drugId)
         return if (existing == null) {
-            val newId = insert(schedule)
-            if (times.isNotEmpty()) {
-                insertTimes(times.map { (min, cnt) ->
+            val newId = insert(scheduleToSave)
+            if (timesToUse.isNotEmpty()) {
+                insertTimes(timesToUse.map { (min, cnt) ->
                     DoseTime(doseTimeId = 0L, doseScheduleId = newId, minutesLocal = min, doseCount = cnt)
                 })
             }
             newId
         } else {
-            val updated = schedule.copy(doseScheduleId = existing.doseScheduleId)
+            val updated = scheduleToSave.copy(doseScheduleId = existing.doseScheduleId)
             update(updated)
-            replaceTimes(existing.doseScheduleId, times)
+            replaceTimes(existing.doseScheduleId, timesToUse)
             existing.doseScheduleId
         }
 

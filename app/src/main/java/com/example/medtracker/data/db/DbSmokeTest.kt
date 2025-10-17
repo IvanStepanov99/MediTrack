@@ -1,6 +1,5 @@
 package com.example.medtracker.data.db
 
-import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -24,7 +23,7 @@ class DbSmokeTest {
 
     @Before
     fun setup() {
-        context = ApplicationProvider.getApplicationContext()
+        context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
             .allowMainThreadQueries()
             .build()
@@ -83,7 +82,7 @@ class DbSmokeTest {
             )
             fail("Expected failure for duplicate Drug")
         } catch (e: Exception) {
-            //ok
+            println("Expected failure for duplicate Drug: ${'$'}{e.message}")
         }
 
         //save a sched for the drug
@@ -92,7 +91,7 @@ class DbSmokeTest {
                 drugId = drugId,
                 prn = false,
                 freqType = "WEEKLY",
-                byWeekDay = "MO,WE",
+                byWeekDay = listOf("MO", "WE"),
                 intervalHours = null,
                 everyNDays = null,
                 endDate = null,
@@ -130,7 +129,7 @@ class DbSmokeTest {
             )
             fail("Expected unique for second schedule on same drug")
         } catch (e: Exception) {
-            //ok
+            println("Expected unique constraint for second schedule: ${'$'}{e.message}")
         }
         try {
             timeDao.insert(
@@ -142,8 +141,7 @@ class DbSmokeTest {
             )
             fail("Expected unique constraint failure for duplicate DoseTime")
         } catch (e: Exception) {
-            //ok
-
+            println("Expected duplicate DoseTime failure: ${'$'}{e.message}")
         }
 
         val plannedAt = now + 60_000
@@ -172,5 +170,39 @@ class DbSmokeTest {
         assertEquals("tablet", fetched.unit)
     }
 
-}
+    @Test
+    fun prnSchedule_doesNotCreateTimes() = runBlocking {
+        val drugDao = db.drugDao()
+        val schedDao = db.doseScheduleDao()
 
+        val now = System.currentTimeMillis()
+
+        val drugId = drugDao.insert(
+            Drug(uid = "local2", name = "PRNTest", brandName = "PRN", drugbankId = "", strength = 0.0, unit = "mg", form = "tablet", notes = null, createdAt = now, updatedAt = now)
+        )
+
+        val schedule = DoseSchedule(
+            drugId = drugId,
+            prn = true,
+            freqType = "PRN",
+            byWeekDay = null,
+            intervalHours = null,
+            everyNDays = null,
+            timesOfDay = listOf("08:00", "20:00"),
+            timeZone = "UTC",
+            createdAt = now,
+            updatedAt = now
+        )
+
+        val timesPairs = listOf(8 * 60 to 1.0, 20 * 60 to 1.0)
+        val schedId = schedDao.saveOrReplaceForDrug(schedule, timesPairs)
+        assertTrue(schedId > 0)
+
+        val agg = schedDao.getWithTimesByDrugId(drugId)
+        assertNotNull(agg)
+        // For PRN schedule the times list should be empty
+        assertEquals(0, agg!!.times.size)
+        assertTrue(agg.schedule.prn)
+    }
+
+}

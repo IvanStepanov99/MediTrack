@@ -12,6 +12,22 @@
             </PendingDiffInfo>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/medtracker/data/db/AppDatabase.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/example/medtracker/data/db/AppDatabase.kt" />
+              <option name="originalContent" value="package com.example.medtracker.data.db&#10;&#10;import androidx.room.*&#10;import com.example.medtracker.data.db.dao.DoseLogDao&#10;import com.example.medtracker.data.db.dao.DoseScheduleDao&#10;import com.example.medtracker.data.db.dao.DoseTimeDao&#10;import com.example.medtracker.data.db.dao.DrugDao&#10;import com.example.medtracker.data.db.dao.UserProfileDao&#10;import com.example.medtracker.data.db.entities.*&#10;&#10;@Database(&#10;    entities = [&#10;        UserProfile::class,&#10;        Drug::class,&#10;        DoseSchedule::class,&#10;        DoseTime::class,&#10;        DoseLog::class&#10;    ],&#10;    version = 1,&#10;    exportSchema = true&#10;)&#10;@TypeConverters(Converters::class)&#10;abstract class AppDatabase : RoomDatabase() {&#10;&#10;    abstract fun userProfileDao(): UserProfileDao&#10;    abstract fun drugDao(): DrugDao&#10;    abstract fun doseScheduleDao(): DoseScheduleDao&#10;    abstract fun doseTimeDao(): DoseTimeDao&#10;    abstract fun doseLogDao(): DoseLogDao&#10;}" />
+              <option name="updatedContent" value="package com.example.medtracker.data.db&#10;&#10;import androidx.room.*&#10;import com.example.medtracker.data.db.dao.DoseLogDao&#10;import com.example.medtracker.data.db.dao.DoseScheduleDao&#10;import com.example.medtracker.data.db.dao.DoseTimeDao&#10;import com.example.medtracker.data.db.dao.DrugDao&#10;import com.example.medtracker.data.db.dao.UserProfileDao&#10;import com.example.medtracker.data.db.entities.*&#10;&#10;@Database(&#10;    entities = [&#10;        UserProfile::class,&#10;        Drug::class,&#10;        DoseSchedule::class,&#10;        DoseTime::class,&#10;        DoseLog::class&#10;    ],&#10;    version = 1,&#10;    exportSchema = true&#10;)&#10;@TypeConverters(Converters::class)&#10;abstract class AppDatabase : RoomDatabase() {&#10;&#10;    abstract fun userProfileDao(): UserProfileDao&#10;    abstract fun drugDao(): DrugDao&#10;    abstract fun doseScheduleDao(): DoseScheduleDao&#10;    abstract fun doseTimeDao(): DoseTimeDao&#10;    abstract fun doseLogDao(): DoseLogDao&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/medtracker/data/db/Converters.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/example/medtracker/data/db/Converters.kt" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/example/medtracker/ui/LoginActivity.kt">
           <value>
             <PendingDiffInfo>

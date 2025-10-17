@@ -19,6 +19,7 @@ import com.example.medtracker.data.db.entities.*
     version = 1,
     exportSchema = true
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userProfileDao(): UserProfileDao

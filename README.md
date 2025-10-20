@@ -39,6 +39,19 @@ Follow these steps to build and run **MediTrack** locally:
 - **Notifications:** WorkManager + Jetpack Notification API
 - **External APIs:** openFDA, DrugBank
 
+## Use Case 1: Add a Medication with Safety Pre-Check
+
+**Steps:**
+1. User taps **Add Medication**.
+2. Searches for *“Carvedilol”* and selects the first result from the suggested medications.
+3. Enters dosage: **10 mg** → Sets schedule: **8:00 PM daily**.
+4. The app automatically runs an **interaction check**.
+
+**Expected Output:**
+- The medication is **saved to the list** with the next dose scheduled.
+- An **interaction warning** is displayed if conflicts are detected with medications already added.
+
+
 ## Disclaimer
 This application is an educational project created for academic purposes.
 It is **not a prescription service** and should **not** be used as a substitute for any professional or pharmaceutical medical advice.

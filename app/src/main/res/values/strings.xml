@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">MedTracker</string>
+    <string name="welcome_user">Welcome, %1$s!</string>
+    <string name="drag_handle">Drag handle</string>
+    <string name="schedule_label">Schedule</string>
+    <string name="everyday">Everyday</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+    <string name="no_scheduled_times">No scheduled times</string>
 </resources>

@@ -13,33 +13,65 @@
 
         <!-- Drag handle -->
         <View
-            android:layout_width="36dp"
+            android:layout_width="30dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
             android:layout_marginBottom="12dp"
             android:background="#DDDDDD"
-            android:contentDescription="Drag handle"/>
+            android:contentDescription="@string/drag_handle"/>
 
-        <!-- Brand (optional, shown only if available) -->
-        <TextView
-            android:id="@+id/tvSheetBrand"
+        <!-- Top row: Brand (left) + Strength and Unit (right) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#3D3D99"
-            android:visibility="gone"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvSheetBrand"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="36sp"
+                android:textColor="#3D3D99"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:id="@+id/tvSheetStrength"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="36sp"
+                    android:textColor="#3D3D99"/>
+
+                <TextView
+                    android:id="@+id/tvSheetUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="36sp"
+                    android:textColor="#3D3D99"
+                    android:layout_marginStart="4dp"/>
+
+            </LinearLayout>
+        </LinearLayout>
 
         <!-- Generic name (or brand if generic missing) -->
         <TextView
             android:id="@+id/tvSheetName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="26sp"
             android:textColor="#333333"
             android:layout_marginTop="4dp"/>
 
-        <!-- Meta row: form / strength / unit -->
+        <!-- Meta row: form (strength/unit moved to top-right) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,27 +84,77 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="#555555"/>
-
-            <TextView
-                android:id="@+id/tvSheetStrength"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#555555"/>
-
-            <TextView
-                android:id="@+id/tvSheetUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:textColor="#555555"/>
         </LinearLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp"/>
+            android:background="#CCCCCC"/>
+
+        <!-- Schedule section -->
+        <LinearLayout
+            android:id="@+id/llScheduleSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:id="@+id/tvSheetScheduleLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:text="@string/schedule_label"/>
+
+            <TextView
+                android:id="@+id/tvScheduleEveryday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="24sp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                android:textColor="#555555"/>
+
+            <HorizontalScrollView
+                android:id="@+id/hsWeekdays"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                android:fillViewport="true"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/llWeekdays"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView android:id="@+id/day_mon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_mon" />
+                    <TextView android:id="@+id/day_tue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_tue" />
+                    <TextView android:id="@+id/day_wed" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_wed" />
+                    <TextView android:id="@+id/day_thu" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_thu" />
+                    <TextView android:id="@+id/day_fri" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_fri" />
+                    <TextView android:id="@+id/day_sat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_sat" />
+                    <TextView android:id="@+id/day_sun" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="6dp" android:text="@string/day_sun" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Times listed vertically -->
+            <LinearLayout
+                android:id="@+id/llScheduleTimes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

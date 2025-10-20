@@ -38,7 +38,6 @@ Follow these steps to build and run **MediTrack** locally:
 - **Database:** Room (Local SQLite)
 - **Notifications:** WorkManager + Jetpack Notification API
 - **External APIs:** openFDA, DrugBank
-- **Version Control:** Git + GitHub
 
 ## Disclaimer
 This application is an educational project created for academic purposes.

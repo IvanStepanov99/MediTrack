@@ -31,7 +31,7 @@ class OpenFdaRepository(
             Log.e("OpenFdaRepository", "API error on pass #1: ${e.message}", e)
         }
 
-        // Fallback to active ingredient name
+        // Fallback to active  name
         search = "active_ingredients.name:\"$wildcard\""
         val encoded2 = URLEncoder.encode(search, StandardCharsets.UTF_8.toString())
         Log.d("OpenFdaRepository", "Search(2-encoded): $encoded2")

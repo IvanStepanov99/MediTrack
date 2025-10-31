@@ -12,4 +12,18 @@
     <string name="day_sat">Sat</string>
     <string name="day_sun">Sun</string>
     <string name="no_scheduled_times">No scheduled times</string>
+
+    <!-- Additional strings used by the refactor -->
+    <string name="no_user_prompt">No user. Please log in.</string>
+    <string name="no_schedule">No schedule</string>
+    <string name="as_needed">As needed</string>
+    <string name="content_desc_search">Search</string>
+    <string name="content_desc_meds">Meds</string>
+    <string name="content_desc_logs">Logs</string>
+    <string name="content_desc_stats">Stats</string>
+    <string name="unknown_drug">(Unknown drug)</string>
+
+    <!-- Buttons for logs card -->
+    <string name="take">Take</string>
+    <string name="skip">Skip</string>
 </resources>

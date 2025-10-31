@@ -1,5 +1,7 @@
 package com.example.medtracker.ui
 
+import android.graphics.Color
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,8 +30,9 @@ class MedAdapter : RecyclerView.Adapter<MedAdapter.VH>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        // Inflate the shared card layout so med-list and logs-list share the same structure
         val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_med, parent, false)
+            .inflate(R.layout.item_med_shared, parent, false)
         return VH(v)
     }
 
@@ -52,27 +55,54 @@ class MedAdapter : RecyclerView.Adapter<MedAdapter.VH>() {
         private val tvStrength: TextView = itemView.findViewById(R.id.tvStrength)
         private val tvUnit: TextView = itemView.findViewById(R.id.tvUnit)
         private val metaRow: View = itemView.findViewById(R.id.metaRow)
+        private val buttonRow: View? = itemView.findViewById(R.id.buttonRow)
 
         fun bind(d: Drug) {
             val brand = d.brandName?.trim().orEmpty()
             val generic = d.name.trim()
 
-            // Brand (primary)
-            if (brand.isBlank()) {
-                tvBrand.visibility = View.GONE
-            } else {
+            // Use the requested primary accent for brand/generic
+            val accentColor = Color.parseColor("#3D3D99")
+            val defaultColor = tvName.currentTextColor
+
+            // Apply the same display rules as the bottom sheet
+            if (brand.isNotBlank()) {
+                // Brand exists: brand above (bold + accent), generic below (regular + default)
                 tvBrand.text = brand
                 tvBrand.visibility = View.VISIBLE
-            }
+                tvBrand.setTypeface(null, Typeface.BOLD)
+                tvBrand.setTextColor(accentColor)
 
-            // Generic (secondary) with fallback to ensure something shows
-            val displayName = when {
-                generic.isNotBlank() -> generic
-                brand.isNotBlank() -> brand
-                else -> "(Unknown drug)"
+                if (generic.isNotBlank()) {
+                    tvName.text = generic
+                    tvName.visibility = View.VISIBLE
+                    tvName.setTypeface(null, Typeface.NORMAL)
+                    tvName.setTextColor(defaultColor)
+                } else {
+                    tvName.text = ""
+                    tvName.visibility = View.GONE
+                }
+            } else {
+                if (generic.isNotBlank()) {
+                    // No brand: generic takes brand slot (bold + accent), hide secondary
+                    tvBrand.text = generic
+                    tvBrand.visibility = View.VISIBLE
+                    tvBrand.setTypeface(null, Typeface.BOLD)
+                    tvBrand.setTextColor(accentColor)
+
+                    tvName.text = ""
+                    tvName.visibility = View.GONE
+                } else {
+                    // Neither present: fallback localized string
+                    tvBrand.text = itemView.context.getString(R.string.unknown_drug)
+                    tvBrand.visibility = View.VISIBLE
+                    tvBrand.setTypeface(null, Typeface.BOLD)
+                    tvBrand.setTextColor(accentColor)
+
+                    tvName.text = ""
+                    tvName.visibility = View.GONE
+                }
             }
-            tvName.text = displayName
-            tvName.visibility = View.VISIBLE
 
             // Form / strength / unit
             val hasStrength = d.strength != null
@@ -93,6 +123,9 @@ class MedAdapter : RecyclerView.Adapter<MedAdapter.VH>() {
             } else {
                 metaRow.visibility = View.GONE
             }
+
+            // Ensure button row is hidden for med-list cards
+            buttonRow?.visibility = View.GONE
         }
 
         private fun formatStrength(v: Double): String =

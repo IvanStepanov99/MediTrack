@@ -38,9 +38,9 @@ Follow these steps to build and run **MediTrack** locally:
 - **Database:** Room (Local SQLite)
 - **Notifications:** WorkManager + Jetpack Notification API
 - **External APIs:** openFDA, DrugBank
+- **Version Control:** Git + GitHub
 
 ## Use Case 1: Add a Medication with Safety Pre-Check
-
 **Steps:**
 1. User taps **Add Medication**.
 2. Searches for *“Carvedilol”* and selects the first result from the suggested medications.

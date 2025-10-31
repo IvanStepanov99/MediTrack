@@ -2,6 +2,7 @@ package com.example.medtracker.data.db.dao
 
 import androidx.room.*
 import com.example.medtracker.data.db.entities.DoseLog
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DoseLogDao {
@@ -42,4 +43,12 @@ interface DoseLogDao {
       WHERE logId = :logId
   """)
     suspend fun setStatus(logId: Long, status: String): Int
+
+    // Stream all logs (most recent/planned first) for the logs screen
+    @Query("SELECT * FROM dose_log ORDER BY plannedTime DESC, logId DESC")
+    fun observeAll(): Flow<List<DoseLog>>
+
+    // Find a specific existing DoseLog by drugId + plannedTime to avoid duplicate inserts
+    @Query("SELECT * FROM dose_log WHERE drugId = :drugId AND plannedTime = :plannedTime LIMIT 1")
+    suspend fun findByDrugIdAndPlannedTime(drugId: Long, plannedTime: Long): DoseLog?
 }

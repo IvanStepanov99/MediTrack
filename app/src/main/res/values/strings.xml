@@ -26,4 +26,50 @@
     <!-- Buttons for logs card -->
     <string name="take">Take</string>
     <string name="skip">Skip</string>
+
+    <!-- Search UI source label -->
+    <string name="search_source_local">In the list</string>
+
+    <!-- Dialog Add Drug strings -->
+    <string name="dialog_form_label">Form of your medication</string>
+    <string name="select_form">Select form</string>
+
+    <!-- Form options -->
+    <string-array name="form_options">
+        <item>Tablet</item>
+        <item>Capsule</item>
+        <item>Liquid</item>
+        <item>Patch</item>
+        <item>Injection</item>
+        <item>Cream</item>
+        <item>Drops</item>
+        <item>Spray</item>
+        <item>Ointment</item>
+        <item>Inhaler</item>
+    </string-array>
+
+    <!-- Buttons -->
+    <string name="cancel">Cancel</string>
+    <string name="next">Next</string>
+    <string name="additional_info">Strength and units of your medication</string>
+    <string name="strength_optional">Strength (optional)</string>
+    <string name="unit_optional">Unit (optional)</string>
+    <string name="notes_optional">Notes (optional)</string>
+    <string name="back">Back</string>
+    <string name="add">Add</string>
+    <!-- Required-field hints -->
+    <string name="strength_required">Strength</string>
+    <string name="unit_required">Unit</string>
+
+    <string name="unit_options_csv">mg|mcg|g|mL|%</string>
+
+    <!-- Schedule page strings -->
+    <string name="on_specific_week_day">On specific week day</string>
+    <string name="chip_su">Su</string>
+    <string name="chip_mo">Mo</string>
+    <string name="chip_tu">Tu</string>
+    <string name="chip_we">We</string>
+    <string name="chip_th">Th</string>
+    <string name="chip_fr">Fr</string>
+    <string name="chip_sa">Sa</string>
 </resources>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MedTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Theme.MedTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorControlActivated">@color/color_5959df</item>
+    </style>
 </resources>

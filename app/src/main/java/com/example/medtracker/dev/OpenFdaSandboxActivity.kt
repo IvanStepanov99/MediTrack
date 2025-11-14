@@ -128,7 +128,9 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
             loading = true
             error = null
             try {
-                results = repo.suggestByName(query, limit = 10)
+                val raw = repo.suggestByName(query, limit = 10)
+
+                results = raw
                 Toast.makeText(ctx, "Results: ${results.size}", Toast.LENGTH_SHORT).show()
             } catch (t: Throwable) {
                 error = t.message ?: "Unknown error"
@@ -214,10 +216,10 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
                                     val current = if (uidPref != null) userDao.get(uidPref) else userDao.getAny()
                                     var realCurrent = current
                                     if (realCurrent == null) {
-                                        // Detect debug mode at runtime via applicationInfo
+
                                         val isDebuggable = (ctx.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
                                         if (isDebuggable) {
-                                            // create a quick debug user so sandbox testing is frictionless
+
                                             val newUid = UUID.randomUUID().toString()
                                             val now = System.currentTimeMillis()
                                             val u = com.example.medtracker.data.db.entities.UserProfile(uid = newUid, firstName = "Debug", lastName = "User", dob = "01/01/1970", createdAt = now, lastSignAt = now)
@@ -233,10 +235,11 @@ private fun SandboxScreen(repo: OpenFdaRepository) {
                                     // ensure realCurrent is non-null and use its uid for insertion
                                     val realUid = realCurrent!!.uid
                                     val drugId = db.drugDao().insert(s.toDrug(uid = realUid))
-                                     // Prepare schedule dialog defaults
+                                    // Prepare schedule dialog defaults
                                     pendingDrugId = drugId
-                                    doseAmountText = s.strengthAmount?.toString() ?: ""
-                                    doseUnitText = s.strengthUnit ?: "mg"
+                                    // strength/unit info not fetched from OpenFDA per user request — leave defaults empty
+                                    doseAmountText = ""
+                                    doseUnitText = "mg"
                                     showScheduleDialog = true
                                     Toast.makeText(ctx, "Inserted drugId=$drugId for uid=$realUid", Toast.LENGTH_SHORT).show()
                                 } catch (e: Exception) {
@@ -366,13 +369,7 @@ private fun SuggestionRow(s: DrugSuggestion, onInsert: () -> Unit) {
     ) {
         Column(Modifier.padding(12.dp)) {
             Text(s.genericName ?: s.brandName ?: "Unknown")
-            val sub = listOfNotNull(
-                s.brandName?.let { "brand: $it" },
-                listOfNotNull(s.strengthAmount?.toString(), s.strengthUnit)
-                    .joinToString(" ")
-                    .takeIf { it.isNotBlank() },
-                s.form
-            ).joinToString(" • ")
+            val sub = s.brandName?.let { "brand: $it" } ?: ""
             if (sub.isNotBlank()) Text(sub, style = MaterialTheme.typography.bodySmall)
         }
     }
